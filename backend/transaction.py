@@ -16,7 +16,7 @@ schema = {
                     },
                     "amount": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.0001
                     }
                 },
                 "required": [
@@ -27,33 +27,25 @@ schema = {
         }
     },
     "properties": {
-        "datetime": {
+        "id": {
+            "type": "string"
+        },
+        "date": {
             "type": "string",
-            "format": "date-time"
+            "pattern": "^[0-9]{4}\-[0-9]{2}\-[0-9]{2}$"
         },
         "reason": {
             "type": "string",
             "minLength": 1
         },
-        "transactions": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-                "type": "object",
-                "additionalProperties": False,
-                "properties": {
-                    "src": {"$ref": "#/definitions/account_list"},
-                    "dest": {"$ref": "#/definitions/account_list"}
-                },
-                "required": [
-                    "src",
-                    "dest"
-                ]
-            }
-        }
+        "src": {"$ref": "#/definitions/account_list"},
+        "dest": {"$ref": "#/definitions/account_list"},
+
     },
     "required": [
+        "date",
         "reason",
-        "transactions"
+        "src",
+        "dest"
     ]
 }

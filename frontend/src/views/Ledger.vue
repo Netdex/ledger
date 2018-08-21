@@ -1,20 +1,46 @@
 <template>
-  <div class="container">
-      <div class="jumbotron">
-          <h1>Hello World!</h1>
-      </div>
-      <HelloWorld/>
-  </div>
+    <b-container :class="loadingStyle">
+        <AccountSummary :list="transactions" class="my-4"></AccountSummary>
+        <TransactionHistory :list="transactions" class="my-4"></TransactionHistory>
+    </b-container>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
-export default {
-  name: 'home',
-  components: {
-    HelloWorld
-  }
-}
+    import AccountSummary from "@/components/AccountSummary"
+    import TransactionHistory from '@/components/TransactionHistory'
+    import LoadProgress from "@/mixins/LoadProgress";
+    import {Transaction} from "@/util/Transaction"
+    import TranasactionDummy from "@/assets/TransactionDummy"
+    
+    export default {
+        name: 'home',
+        components: {
+            AccountSummary,
+            TransactionHistory
+        },
+        mixins: [LoadProgress],
+        data() {
+            return {
+                transactions: [],
+                accounts: []
+            }
+        },
+        created() {
+            this.fetchData();
+        },
+        methods: {
+            fetchData() {
+                this.setState('loading');
+                Transaction.getAll()
+                    .catch(() => {
+                        this.state = 'error'
+                    })
+                    .then(response => {
+                        this.transactions = response;
+                        this.state = 'success';
+                    });
+                this.setState('success');
+            }
+        }
+    }
 </script>
