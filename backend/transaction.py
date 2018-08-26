@@ -17,6 +17,10 @@ schema = {
                     "amount": {
                         "type": "integer",
                         "minimum": 1
+                    },
+                    "rtype": {
+                        "type": "string",
+                        "enum": ["exact", "percent", "diff"]
                     }
                 },
                 "required": [
@@ -40,7 +44,6 @@ schema = {
         },
         "src": {"$ref": "#/definitions/account_list"},
         "dest": {"$ref": "#/definitions/account_list"},
-
     },
     "required": [
         "date",

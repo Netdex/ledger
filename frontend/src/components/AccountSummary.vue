@@ -14,6 +14,7 @@
 
 <script>
     import Format from '@/mixins/Format'
+    import uuidv4 from 'uuid/v4'
 
     export default {
         props: {
@@ -36,7 +37,7 @@
                     if (val.account !== account && val.amount > 0) {
                         let amount = Math.min(val.amount, remain);
                         if (amount > 0) {
-                            src.push({account: val.account, amount: amount});
+                            src.push({_id: uuidv4(), account: val.account, amount: amount, rtype: 'exact'});
                             remain -= amount;
                         }
                     }
@@ -45,7 +46,7 @@
                 let tact = {
                     id: "",
                     date: Format.today(),
-                    dest: [{account: account, amount: -this.accounts[account]}],
+                    dest: [{_id: uuidv4(), account: account, amount: -this.accounts[account], rtype: 'exact'}],
                     src: src,
                     reason: `Reconcile ${account}'s account`
                 };

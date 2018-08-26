@@ -8,10 +8,10 @@
                    :value="format"
                    ref="input"
                    class="form-control"
-                   :disabled="selected === 'diff'"/>
+                   :disabled="type === 'diff'"/>
             <b-form-radio-group buttons
                                 button-variant="outline-primary"
-                                v-model="selected">
+                                v-model="typeModel">
                 <b-form-radio value="exact">$</b-form-radio>
                 <b-form-radio value="percent" :disabled="!hasPercentLock">%</b-form-radio>
                 <b-form-radio value="diff" :disabled="!hasDiffLock">B</b-form-radio>
@@ -30,18 +30,18 @@
             accountType: String,
             counterSum: Number,
             sum: Number,
+            type: String
         },
         mixins: [Format],
         created() {
             this.inputValue = (this.value / 100).toFixed(2);
-            this.selected = 'exact';
+            this.acquireLock(this.type);
         },
         destroyed() {
-            this.destroyLock(this.selected);
+            this.destroyLock(this.type);
         },
         data() {
             return {
-                selected: '',
                 prepend: '',
                 inputValue: '0.00',
                 isSumWatcherDepend: false
@@ -58,7 +58,7 @@
             counterSum: function () {
                 this.changed(this.format);
             },
-            selected: function (newMode, oldMode) {
+            type: function (newMode, oldMode) {
                 this.destroyLock(oldMode);
                 this.acquireLock(newMode);
 
@@ -107,12 +107,12 @@
                 let inputVal = parseFloat(+val.replace(/[^\d.]/g, ''));
 
                 let newValue = 0;
-                switch (this.selected) {
+                switch (this.type) {
                     case 'exact':
                         newValue = inputVal * 100;
                         break;
                     case 'percent':
-                        newValue = this.counterSum * inputVal / 100;
+                        newValue = Math.round(this.counterSum * inputVal / 100);
                         this.prepend = this.currency(newValue);
                         break;
                     case 'diff':
@@ -128,7 +128,7 @@
             format() {
                 // display formatted monetary value
                 let fmtValue = '';
-                switch (this.selected) {
+                switch (this.type) {
                     case 'exact':
                         fmtValue = (parseFloat(this.value) / 100).toFixed(2);
                         break;
@@ -148,7 +148,11 @@
             hasDiffLock() {
                 return (this.opts.diffLock.handle === this || this.opts.diffLock.handle === null) &&
                     this.hasPercentLock;
-            }
+            },
+            typeModel: {
+                get () { return this.type },
+                set (value) { this.$emit('update:type', value) },
+            },
         }
     }
 </script>

@@ -27,7 +27,8 @@
                                    :account-type="accountType"
                                    :opts.sync="opts"
                                    :sum="sum"
-                                   :counter-sum="counterSum"></CurrencyInput>
+                                   :counter-sum="counterSum"
+                                   :type.sync="acc.rtype"></CurrencyInput>
                 </b-col>
                 <b-col md="2">
                     <b-button variant="danger" @click="delAccount(acc)" block>
@@ -44,7 +45,7 @@
     import CurrencyInput from '@/components/CurrencyInput'
     import PercentInput from '@/components/PercentInput'
     import uuidv4 from 'uuid/v4'
-    
+
     function delarrobj(array, obj) {
         let index = array.indexOf(obj);
         if (index !== -1) {
@@ -80,8 +81,7 @@
                     _id: uuidv4(),
                     account: '',
                     amount: 0,
-                    type: 'exact',
-                    value: '0.00'
+                    rtype: 'exact',
                 });
             },
             delAccount(account) {
