@@ -29,7 +29,7 @@
             opts: Object,
             accountType: String,
             counterSum: Number,
-            sum: Number
+            sum: Number,
         },
         mixins: [Format],
         created() {
@@ -48,14 +48,14 @@
             }
         },
         watch: {
-            sum: function (newSum, oldSum) {
+            sum: function () {
                 if (this.isSumWatcherDepend) {
                     this.isSumWatcherDepend = false;
                     return;
                 }
                 this.changed(this.format);
             },
-            counterSum: function (newSum, oldSum) {
+            counterSum: function () {
                 this.changed(this.format);
             },
             selected: function (newMode, oldMode) {
@@ -113,7 +113,7 @@
                         break;
                     case 'percent':
                         newValue = this.counterSum * inputVal / 100;
-                        this.prepend = this.currency(this.value);
+                        this.prepend = this.currency(newValue);
                         break;
                     case 'diff':
                         this.isSumWatcherDepend = true;

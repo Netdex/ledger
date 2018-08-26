@@ -14,7 +14,7 @@
 
         </div>
 
-        <b-form-group v-for="acc in list" :key="acc.id" inline>
+        <b-form-group v-for="acc in list" :key="acc._id" inline>
             <b-row>
                 <b-col md="6">
                     <b-form-input type="text"
@@ -77,7 +77,7 @@
         methods: {
             addAccount() {
                 this.list.push({
-                    id: uuidv4(),
+                    _id: uuidv4(),
                     account: '',
                     amount: 0,
                     type: 'exact',

@@ -125,11 +125,11 @@
                     percentLock: {          // only one column can use percent at a time
                         name: '',
                         count: 0
-                    },        
-                    diffLock: {
+                    },
+                    diffLock: {             // only one input can use diff at a time
                         name: '',
                         handle: null
-                    },           // only one input can use diff at a time
+                    },
                 }
             }
         },

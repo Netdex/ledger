@@ -26,7 +26,7 @@ export const Transaction = {
         return new Promise((resolve, reject) => {
             fetch(`/transaction/upsert`, {
                 method: 'POST',
-                body: JSON.stringify(obj),
+                body: JSON.stringify(obj, this.filter),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -39,6 +39,11 @@ export const Transaction = {
                 })
                 .catch(reject);
         });
-
+    },
+    filter(key, value) {
+        // remove meta props
+        if (key.startsWith("_")) 
+            return undefined;
+        return value;
     }
 };

@@ -47,7 +47,7 @@ def transaction_get_page(page):
     tsns = transaction_get_all()[::-1]
     # TODO maybe make this more efficient someday
     page_model = [tsns[i:i + config['per_page']] for i in range(0, len(tsns), config['per_page'])]
-    if page >= 0 and page < len(page_model):
+    if 0 <= page < len(page_model):
         return len(page_model), page_model[page]
     return len(page_model), None
 
