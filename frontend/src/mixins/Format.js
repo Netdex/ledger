@@ -6,7 +6,7 @@ export default {
                 currency: 'USD',
                 minimumFractionDigits: 2,
             });
-            return formatter.format(val);
+            return formatter.format(val/100);
         },
     },
     

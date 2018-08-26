@@ -4,17 +4,22 @@ from functools import reduce
 import transaction
 
 
-def validate_transaction(trns):
+def validate_transaction(tact):
     """
     Validate specified transaction against transaction schema
-    :param trns: Transaction to validate
+    :param tact: Transaction to validate
     :return: Whether the transaction matches the schema
     """
     try:
-        validate(trns, transaction.schema)
-        if reduce((lambda acc, x: acc + x['amount']), trns['src'], 0) \
-                != reduce((lambda acc, x: acc + x['amount']), trns['dest'], 0):
+        # validate transaction against JSON schema
+        validate(tact, transaction.schema)
+
+        # validate that src and dest are balanced
+        def transaction_srcdest_total(tactlist):
+            return reduce((lambda acc, x: acc + x['amount']), tactlist, 0)
+        if transaction_srcdest_total(tact['src']) != transaction_srcdest_total(tact['dest']):
             return False
+
         return True
     except ValidationError as e:
         print(e)

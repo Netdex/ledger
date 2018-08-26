@@ -4,44 +4,47 @@
             <b-nav pills>
                 <b-nav-item @click="addAccount" active>Add <i class="fas fa-plus"></i></b-nav-item>
                 <b-nav-item @click="clearAccounts">Clear <i class="fas fa-eraser"></i></b-nav-item>
+                <div class="ml-auto">
+                    <b-btn variant="primary">
+                        Total 
+                        <b-badge variant="success">{{currency(total)}}</b-badge>
+                    </b-btn>
+                </div>
             </b-nav>
+
         </div>
 
-        <b-form-group v-for="tr in list" inline>
+        <b-form-group v-for="acc in list" :key="acc.id" inline>
             <b-row>
                 <b-col md="6">
                     <b-form-input type="text"
                                   placeholder="Account name"
-                                  v-model="tr.account"
+                                  v-model="acc.account"
                                   required></b-form-input>
                 </b-col>
                 <b-col md="4">
-                    <b-input-group prepend="$">
-                        <b-form-input type="number"
-                                      placeholder="Amount"
-                                      v-model.number="tr.amount"
-                                      min="0.01" step="0.01"
-                                      required></b-form-input>
-                    </b-input-group>
+                    <CurrencyInput v-model="acc.amount"
+                                   :account-type="accountType"
+                                   :opts.sync="opts"
+                                   :sum="sum"
+                                   :counter-sum="counterSum"></CurrencyInput>
                 </b-col>
                 <b-col md="2">
-                    <b-button variant="danger" @click="delAccount(tr)">
+                    <b-button variant="danger" @click="delAccount(acc)" block>
                         <i class="fas fa-trash"></i></b-button>
                 </b-col>
             </b-row>
         </b-form-group>
-        <div slot="footer">
-            <b-badge variant="primary">
-                Total 
-                <b-badge variant="success">{{currency(total)}}</b-badge>
-            </b-badge>
-        </div>
+
     </b-card>
 </template>
 
 <script>
     import Format from '@/mixins/Format'
-
+    import CurrencyInput from '@/components/CurrencyInput'
+    import PercentInput from '@/components/PercentInput'
+    import uuidv4 from 'uuid/v4'
+    
     function delarrobj(array, obj) {
         let index = array.indexOf(obj);
         if (index !== -1) {
@@ -50,16 +53,35 @@
     }
 
     export default {
+        components: {CurrencyInput, PercentInput},
         mixins: [Format],
-        props: {"list": Array},
+        props: {
+            "accountType": String,
+            "list": Array,
+            "counterSum": Number,
+            "sum": Number,
+            "opts": Object
+        },
         data() {
-            return {}
+            return {
+                money: {
+                    decimal: '.',
+                    thousands: ',',
+                    prefix: '',
+                    suffix: '',
+                    precision: 2,
+                    masked: false
+                },
+            }
         },
         methods: {
             addAccount() {
                 this.list.push({
+                    id: uuidv4(),
                     account: '',
-                    amount: 0.01
+                    amount: 0,
+                    type: 'exact',
+                    value: '0.00'
                 });
             },
             delAccount(account) {
@@ -71,7 +93,9 @@
         },
         computed: {
             total() {
-                return this.list.reduce((p, c) => p + c.amount, 0);
+                let t = this.list.reduce((p, c) => p + c.amount, 0);
+                this.$emit('update:sum', t);
+                return t;
             }
         }
     }

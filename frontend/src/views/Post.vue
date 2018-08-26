@@ -5,23 +5,29 @@
                 <b-navbar-brand>{{transaction.id ? 'Edit transaction' : 'New transaction'}}</b-navbar-brand>
                 <b-navbar-toggle target="post_nav_collapse"></b-navbar-toggle>
                 <b-collapse is-nav id="post_nav_collapse">
-                    <b-navbar-nav>
+                    <b-navbar-nav class="ml-auto">
+                        <b-button id="deletePopover"
+                                  variant="danger"
+                                  v-if="transaction.id !== ''"
+                                  class="m-1">
+                            Delete <i class="fas fa-trash"></i>
+                            <b-popover target="deletePopover"
+                                       placement="right"
+                                       title="Confirm"
+                                       triggers="click blur">
+                                <b-btn variant="danger" size="sm" @click="deleteTransaction" block>
+                                    Delete this transaction
+                                </b-btn>
+                            </b-popover>
+                        </b-button>
+                        <b-button variant="info"
+                                  v-if="transaction.id !== ''"
+                                  class="m-1"
+                                  @click="duplicate">
+                            Duplicate <i class="fas fa-copy"></i>
+                        </b-button>
                     </b-navbar-nav>
                 </b-collapse>
-                <b-navbar-nav class="ml-auto">
-                    <b-button id="deletePopover"
-                              variant="danger"
-                              v-if="transaction.id !== ''">
-                        Delete <i class="fas fa-trash"></i>
-                        <b-popover target="deletePopover"
-                                   placement="right"
-                                   title="Confirm"
-                                   triggers="click blur">
-                            <b-btn variant="danger" size="sm" @click="deleteTransaction" block>Delete this transaction
-                            </b-btn>
-                        </b-popover>
-                    </b-button>
-                </b-navbar-nav>
             </b-navbar>
 
             <b-form @submit="onSubmit">
@@ -45,23 +51,33 @@
                                   required></b-form-input>
                 </b-form-group>
 
-                <b-row>
-                    <b-col>
-                        <h4>Credits</h4>
-                        <AccountList :list="transaction.src"></AccountList>
-                    </b-col>
-                    <b-col>
-                        <h4>Debits</h4>
-                        <AccountList :list="transaction.dest"></AccountList>
-                    </b-col>
-                </b-row>
+                <hr>
+
+                <b-card title="Credits"
+                        sub-title="We will take money out of these accounts."
+                        class="mb-4">
+                    <AccountList account-type="credit"
+                                 :list="transaction.src"
+                                 :sum.sync="totals.src"
+                                 :counter-sum="totals.dest"
+                                 :opts.sync="inputOptions"></AccountList>
+                </b-card>
+                <b-card title="Debits"
+                        sub-title="We will put money into these accounts.">
+                    <AccountList account-type="debit"
+                                 :list="transaction.dest"
+                                 :sum.sync="totals.dest"
+                                 :counter-sum="totals.src"
+                                 :opts.sync="inputOptions"></AccountList>
+                </b-card>
+
                 <hr>
 
                 <b-card no-body align="center">
                     <b-button type="submit" variant="primary" :disabled="hasErrors" block>Submit</b-button>
 
                     <b-list-group flush>
-                        <b-list-group-item v-for="error in errors">
+                        <b-list-group-item v-for="error in errors" :key="error">
                             {{ error }}
                         </b-list-group-item>
                     </b-list-group>
@@ -77,9 +93,6 @@
     import {Transaction} from "@/util/Transaction";
     import Format from "@/mixins/Format";
 
-    function centTotal(list) {
-        return list.reduce((p, c) => p + c.amount * 100, 0);
-    }
 
     export default {
         components: {AccountList},
@@ -103,6 +116,20 @@
                     date: Format.today(),
                     src: [],
                     dest: []
+                },
+                totals: {
+                    src: 0,
+                    dest: 0
+                },
+                inputOptions: {
+                    percentLock: {          // only one column can use percent at a time
+                        name: '',
+                        count: 0
+                    },        
+                    diffLock: {
+                        name: '',
+                        handle: null
+                    },           // only one input can use diff at a time
                 }
             }
         },
@@ -118,7 +145,8 @@
                         this.setState('error');
                     });
             },
-            onSubmit() {
+            onSubmit(evt) {
+                evt.preventDefault();
                 this.setState('loading');
                 Transaction.upsert(this.transaction)
                     .then(() => {
@@ -141,20 +169,19 @@
                         alert(`error: ${e}`);
                         this.setState('error');
                     });
-            }
+            },
+            duplicate() {
+                // this is a pretty funny way to duplicate a transaction but hey it works
+                this.transaction.id = "";
+            },
         },
         computed: {
             errors() {
-                let st = centTotal(this.transaction.src);
-                let dt = centTotal(this.transaction.dest);
-
                 let err = [];
-                if (st !== dt) {
+                if (this.totals.src !== this.totals.dest)
                     err.push('Debits and credits do not balance!');
-                }
-                if (st <= 0 || dt <= 0) {
+                if (this.totals.src <= 0 || this.totals.dest <= 0)
                     err.push('Debit and/or credits cannot be non-positive!');
-                }
                 return err;
             },
             hasErrors() {

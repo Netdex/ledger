@@ -15,8 +15,8 @@ schema = {
                         "minLength": 1
                     },
                     "amount": {
-                        "type": "number",
-                        "minimum": 0.0001
+                        "type": "integer",
+                        "minimum": 1
                     }
                 },
                 "required": [

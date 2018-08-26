@@ -10,7 +10,6 @@
     import TransactionHistory from '@/components/TransactionHistory'
     import LoadProgress from "@/mixins/LoadProgress";
     import {Transaction} from "@/util/Transaction"
-    import TranasactionDummy from "@/assets/TransactionDummy"
     
     export default {
         name: 'home',
@@ -32,14 +31,13 @@
             fetchData() {
                 this.setState('loading');
                 Transaction.getAll()
-                    .catch(() => {
-                        this.state = 'error'
-                    })
                     .then(response => {
                         this.transactions = response;
                         this.state = 'success';
+                    })
+                    .catch(() => {
+                        this.state = 'error'
                     });
-                this.setState('success');
             }
         }
     }

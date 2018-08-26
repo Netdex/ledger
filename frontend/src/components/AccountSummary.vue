@@ -2,6 +2,7 @@
     <b-card-group columns>
         <b-card v-for="(amt, acc) in accounts"
                 v-if="amt !== 0"
+                :key="acc"
                 :title="acc"
                 :sub-title="(amt < 0) ? 'owes the group ledger' : 'is owed by the group ledger'">
             <b-btn :variant="(amt < 0) ? 'danger' : 'success'" @click="reconcile(acc)" block>
@@ -33,7 +34,7 @@
                 let src = [];
                 this.accountsListDescByAmount.some(val => {
                     if (val.account !== account && val.amount > 0) {
-                        let amount = Math.round(Math.min(val.amount, remain) * 100) / 100;
+                        let amount = Math.min(val.amount, remain);
                         if (amount > 0) {
                             src.push({account: val.account, amount: amount});
                             remain -= amount;
@@ -44,7 +45,7 @@
                 let tact = {
                     id: "",
                     date: Format.today(),
-                    dest: [{account: account, amount: Math.round(-this.accounts[account] * 100) / 100}],
+                    dest: [{account: account, amount: -this.accounts[account]}],
                     src: src,
                     reason: `Reconcile ${account}'s account`
                 };
@@ -54,17 +55,18 @@
         computed: {
             accounts() {
                 let accs = {};
+
+                function mapsum(list, sign) {
+                    for (let acc of list) {
+                        if (!accs[acc.account])
+                            accs[acc.account] = 0;
+                        accs[acc.account] += sign * acc.amount;
+                    }
+                }
+
                 for (let tact of this.list) {
-                    for (let acc of tact.src) {
-                        if (!accs[acc.account])
-                            accs[acc.account] = 0;
-                        accs[acc.account] -= acc.amount;
-                    }
-                    for (let acc of tact.dest) {
-                        if (!accs[acc.account])
-                            accs[acc.account] = 0;
-                        accs[acc.account] += acc.amount;
-                    }
+                    mapsum(tact.src, -1);
+                    mapsum(tact.dest, 1);
                 }
                 return accs;
             },

@@ -31,7 +31,12 @@ export const Transaction = {
                     'Content-Type': 'application/json'
                 }
             })
-                .then(resolve)
+                .then(response => {
+                    if (response.status >= 200 && response.status < 300)
+                        resolve();
+                    else
+                        reject('could not contact server');
+                })
                 .catch(reject);
         });
 

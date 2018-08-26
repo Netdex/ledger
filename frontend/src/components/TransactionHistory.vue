@@ -1,6 +1,5 @@
 <template>
     <b-card>
-        
         <b-table :fields="fields"
                  :items="list"
                  :sort-by.sync="sortBy"
@@ -12,12 +11,16 @@
             <template slot="tact" slot-scope="data">
                 <b-row>
                     <b-col md="6">
-                        <b-badge variant="primary" class="w-100" v-for="src in data.item.src">{{src.account}}
+                        <b-badge v-for="src in data.item.src" 
+                                 :key="src.id"
+                                 variant="primary" class="w-100">{{src.account}}
                             <b-badge variant="danger" class="float-right">-{{currency(src.amount)}}</b-badge>
                         </b-badge>
                     </b-col>
                     <b-col md="6">
-                        <b-badge variant="primary" class="w-100" v-for="dest in data.item.dest">{{dest.account}}                            
+                        <b-badge v-for="dest in data.item.dest" 
+                                 :key="dest.id"
+                                 variant="primary" class="w-100">{{dest.account}}                            
                             <b-badge variant="success" class="float-right">+{{currency(dest.amount)}}</b-badge>
                         </b-badge>
                     </b-col>
