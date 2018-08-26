@@ -37,7 +37,12 @@
                     if (val.account !== account && val.amount > 0) {
                         let amount = Math.min(val.amount, remain);
                         if (amount > 0) {
-                            src.push({_id: uuidv4(), account: val.account, amount: amount, rtype: 'exact'});
+                            src.push({
+                                _id: uuidv4(),
+                                account: val.account,
+                                amount: amount,
+                                rtype: 'exact'
+                            });
                             remain -= amount;
                         }
                     }
@@ -46,7 +51,12 @@
                 let tact = {
                     id: "",
                     date: Format.today(),
-                    dest: [{_id: uuidv4(), account: account, amount: -this.accounts[account], rtype: 'exact'}],
+                    dest: [{
+                        _id: uuidv4(),
+                        account: account,
+                        amount: -this.accounts[account],
+                        rtype: 'exact'
+                    }],
                     src: src,
                     reason: `Reconcile ${account}'s account`
                 };
