@@ -3,6 +3,9 @@
 
 General ledger for managing money between a group of people.
 
+![alt text](https://i.imgur.com/xznQpPw.png)
+![alt text](https://i.imgur.com/gVCBdkW.png)
+
 ## Motivation
 When money floats between people often, it doesn't make sense to pay people back immediately given the overhead of counting cash and electronic transfers. Instead, it makes more sense to keep a record of transactions then reconcile the accumulated amount periodically.
 
