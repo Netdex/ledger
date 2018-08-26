@@ -1,11 +1,9 @@
-from flask import Flask, render_template, request, abort
+from gevent.pywsgi import WSGIServer
 import json
-from datetime import datetime
-import uuid
-from operator import attrgetter
+from flask import Flask, request, abort
 
-import validation
 import database as db
+import validation
 from config import config
 
 app = Flask(__name__,
@@ -57,4 +55,8 @@ def rt_index():
 
 
 if __name__ == '__main__':
-    app.run()
+    if config['devel']:
+        app.run()
+    else:
+        http_server = WSGIServer(('', config['port']), app)
+        http_server.serve_forever()
