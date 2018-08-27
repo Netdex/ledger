@@ -7,7 +7,7 @@
                 <div class="ml-auto">
                     <b-btn variant="primary">
                         Total 
-                        <b-badge variant="success">{{currency(total)}}</b-badge>
+                        <b-badge variant="success">{{currency(sum)}}</b-badge>
                     </b-btn>
                 </div>
             </b-nav>
@@ -43,7 +43,6 @@
 <script>
     import Format from '@/mixins/Format'
     import CurrencyInput from '@/components/CurrencyInput'
-    import PercentInput from '@/components/PercentInput'
     import uuidv4 from 'uuid/v4'
 
     function delarrobj(array, obj) {
@@ -54,7 +53,7 @@
     }
 
     export default {
-        components: {CurrencyInput, PercentInput},
+        components: {CurrencyInput},
         mixins: [Format],
         props: {
             "accountType": String,
@@ -92,11 +91,7 @@
             }
         },
         computed: {
-            total() {
-                let t = this.list.reduce((p, c) => p + c.amount, 0);
-                this.$emit('update:sum', t);
-                return t;
-            }
+            
         }
     }
 </script>

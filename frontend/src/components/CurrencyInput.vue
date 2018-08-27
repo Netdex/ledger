@@ -4,7 +4,7 @@
             <input type="number"
                    step="0.01"
                    min="0.01"
-                   @change="changed($event.target.value)"
+                   @change="changed($event.target.value, true)"
                    :value="format"
                    ref="input"
                    class="form-control"
@@ -34,7 +34,8 @@
         },
         mixins: [Format],
         created() {
-            this.inputValue = (this.value / 100).toFixed(2);
+        },
+        mounted() {
             this.acquireLock(this.type);
         },
         destroyed() {
@@ -43,14 +44,14 @@
         data() {
             return {
                 prepend: '',
-                inputValue: '0.00',
-                isSumWatcherDepend: false
+                inputValue: '',
+                isWatchSumDependant: false
             }
         },
         watch: {
             sum: function () {
-                if (this.isSumWatcherDepend) {
-                    this.isSumWatcherDepend = false;
+                if (this.isWatchSumDependant) {
+                    this.isWatchSumDependant = false;
                     return;
                 }
                 this.changed(this.format);
@@ -86,23 +87,30 @@
                 switch (newMode) {
                     case 'exact':
                         this.prepend = '$';
+                        this.inputValue = (this.value / 100).toFixed(2);
+
                         break;
                     case 'percent':
+
                         this.opts.percentLock.name = this.accountType;
                         this.opts.percentLock.count++;
-                        if (this.counterSum === 0)
-                            this.inputValue = '0.00';
+                        if (this.counterSum !== 0) {
+                            let val = this.value / this.counterSum * 100;
+                            this.inputValue = val.toFixed(2);
+                            this.prepend = this.currency(this.value);
+                        }
                         else
-                            this.inputValue = (this.value / this.counterSum * 100).toFixed(2);
+                            this.inputValue = '0.00';
                         break;
                     case 'diff':
                         this.prepend = '$';
                         this.opts.diffLock.name = this.accountType;
                         this.opts.diffLock.handle = this;
+                        this.inputValue = (this.value / 100).toFixed(2);
                         break;
                 }
             },
-            changed(val) {
+            changed(val, setWatchFlag) {
                 // calculate the real monetary value in cents
                 let inputVal = parseFloat(+val.replace(/[^\d.]/g, ''));
 
@@ -116,7 +124,8 @@
                         this.prepend = this.currency(newValue);
                         break;
                     case 'diff':
-                        this.isSumWatcherDepend = true;
+                        if (setWatchFlag === true)
+                            this.isWatchSumDependant = true;
                         newValue = Math.max(this.counterSum - this.sum + inputVal * 100, 0);
                         break;
                 }
@@ -150,8 +159,12 @@
                     this.hasPercentLock;
             },
             typeModel: {
-                get () { return this.type },
-                set (value) { this.$emit('update:type', value) },
+                get() {
+                    return this.type
+                },
+                set(value) {
+                    this.$emit('update:type', value)
+                },
             },
         }
     }

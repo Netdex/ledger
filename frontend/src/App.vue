@@ -7,22 +7,24 @@
                 <b-navbar-nav>
                     <b-nav-item to="/">Home</b-nav-item>
                     <b-nav-item to="/post">New transaction <i class="fas fa-pencil-alt"></i></b-nav-item>
+                    <b-nav-item v-b-modal="'help-modal'">Help <i class="fas fa-question-circle"></i></b-nav-item>
                 </b-navbar-nav>
                 <b-navbar-nav class="ml-auto">
+                    <b-nav-item>this is truly the future of money management</b-nav-item>
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
-        
+
         <router-view/>
-        
-        <footer class="page-footer">
-            <b-container>
-            <b-row>
-            <b-col md="6" class="mx-auto text-center">
-            </b-col>
-            </b-row>
-            </b-container>
-        </footer>
+
+        <HelpModal></HelpModal>
     </div>
 </template>
 
+<script>
+    import HelpModal from '@/components/HelpModal'
+
+    export default {
+        components: {HelpModal}
+    }
+</script>

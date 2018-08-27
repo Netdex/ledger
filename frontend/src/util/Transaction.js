@@ -35,7 +35,7 @@ export const Transaction = {
                     if (response.status >= 200 && response.status < 300)
                         resolve();
                     else
-                        reject('could not contact server');
+                        reject(`unexpected code ${response.status} while upserting transaction`);
                 })
                 .catch(reject);
         });

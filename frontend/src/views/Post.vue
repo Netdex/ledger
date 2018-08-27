@@ -1,89 +1,87 @@
 <template>
     <b-container :class="loadingStyle">
-        <b-card>
-            <b-navbar type="light" toggleable="md">
-                <b-navbar-brand>{{transaction.id ? 'Edit transaction' : 'New transaction'}}</b-navbar-brand>
-                <b-navbar-toggle target="post_nav_collapse"></b-navbar-toggle>
-                <b-collapse is-nav id="post_nav_collapse">
-                    <b-navbar-nav class="ml-auto">
-                        <b-button id="deletePopover"
-                                  variant="danger"
-                                  v-if="transaction.id !== ''"
-                                  class="m-1">
-                            Delete <i class="fas fa-trash"></i>
-                            <b-popover target="deletePopover"
-                                       placement="right"
-                                       title="Confirm"
-                                       triggers="click blur">
-                                <b-btn variant="danger" size="sm" @click="deleteTransaction" block>
-                                    Delete this transaction
-                                </b-btn>
-                            </b-popover>
-                        </b-button>
-                        <b-button variant="info"
-                                  v-if="transaction.id !== ''"
-                                  class="m-1"
-                                  @click="duplicate">
-                            Duplicate <i class="fas fa-copy"></i>
-                        </b-button>
-                    </b-navbar-nav>
-                </b-collapse>
-            </b-navbar>
+        <b-navbar type="light" toggleable="md">
+            <b-navbar-brand>{{transaction.id ? 'Edit transaction' : 'New transaction'}}</b-navbar-brand>
+            <b-navbar-toggle target="post_nav_collapse"></b-navbar-toggle>
+            <b-collapse is-nav id="post_nav_collapse">
+                <b-navbar-nav class="ml-auto">
+                    <b-button id="deletePopover"
+                              variant="danger"
+                              v-if="transaction.id !== ''"
+                              class="m-1">
+                        Delete <i class="fas fa-trash"></i>
+                        <b-popover target="deletePopover"
+                                   placement="right"
+                                   title="Confirm"
+                                   triggers="click blur">
+                            <b-btn variant="danger" size="sm" @click="deleteTransaction" block>
+                                Delete this transaction
+                            </b-btn>
+                        </b-popover>
+                    </b-button>
+                    <b-button variant="info"
+                              v-if="transaction.id !== ''"
+                              class="m-1"
+                              @click="duplicate">
+                        Duplicate <i class="fas fa-copy"></i>
+                    </b-button>
+                </b-navbar-nav>
+            </b-collapse>
+        </b-navbar>
 
-            <b-form @submit="onSubmit">
-                <h3></h3>
-                <hr>
-                <b-form-group label="Reason"
-                              label-for="reason"
-                              description="The reason this transaction was made.">
-                    <b-form-input id="reason"
-                                  type="text"
-                                  placeholder="Transaction reason"
-                                  v-model="transaction.reason"
-                                  required></b-form-input>
-                </b-form-group>
-                <b-form-group label="Date"
-                              label-for="date"
-                              description="The date this transaction occurred.">
-                    <b-form-input id="date"
-                                  type="date"
-                                  v-model="transaction.date"
-                                  required></b-form-input>
-                </b-form-group>
+        <b-form @submit="onSubmit">
+            <h3></h3>
+            <hr>
+            <b-form-group label="Reason"
+                          label-for="reason"
+                          description="The reason this transaction was made.">
+                <b-form-input id="reason"
+                              type="text"
+                              placeholder="Transaction reason"
+                              v-model="transaction.reason"
+                              required></b-form-input>
+            </b-form-group>
+            <b-form-group label="Date"
+                          label-for="date"
+                          description="The date this transaction occurred.">
+                <b-form-input id="date"
+                              type="date"
+                              v-model="transaction.date"
+                              required></b-form-input>
+            </b-form-group>
 
-                <hr>
+            <hr>
 
-                <b-card title="Credits"
-                        sub-title="We will take money out of these accounts."
-                        class="mb-4">
-                    <AccountList account-type="credit"
-                                 :list="transaction.src"
-                                 :sum.sync="totals.src"
-                                 :counter-sum="totals.dest"
-                                 :opts.sync="inputOptions"></AccountList>
-                </b-card>
-                <b-card title="Debits"
-                        sub-title="We will put money into these accounts.">
-                    <AccountList account-type="debit"
-                                 :list="transaction.dest"
-                                 :sum.sync="totals.dest"
-                                 :counter-sum="totals.src"
-                                 :opts.sync="inputOptions"></AccountList>
-                </b-card>
+            <div class="mb-4">
+                <h4>Credits</h4>
+                <p>We will take money out of these accounts.</p>
+                <AccountList account-type="credit"
+                             :list="transaction.src"
+                             :sum="srctotal"
+                             :counter-sum="desttotal"
+                             :opts.sync="inputOptions"></AccountList>
+            </div>
 
-                <hr>
+            <div class="mb-4">
+                <h4>Debits</h4>
+                <p>We will put money into these accounts.</p>
+                <AccountList account-type="debit"
+                             :list="transaction.dest"
+                             :sum="desttotal"
+                             :counter-sum="srctotal"
+                             :opts.sync="inputOptions"></AccountList>
+            </div>
+            
+            <b-card no-body align="center">
+                <b-button type="submit" variant="primary" :disabled="hasErrors" block>Submit</b-button>
 
-                <b-card no-body align="center">
-                    <b-button type="submit" variant="primary" :disabled="hasErrors" block>Submit</b-button>
-
-                    <b-list-group flush>
-                        <b-list-group-item v-for="error in errors" :key="error">
-                            {{ error }}
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-card>
-            </b-form>
-        </b-card>
+                <b-list-group flush>
+                    <b-list-group-item v-for="error in errors" :key="error">
+                        {{ error }}
+                    </b-list-group-item>
+                </b-list-group>
+            </b-card>
+        </b-form>
     </b-container>
 </template>
 
@@ -116,10 +114,6 @@
                     date: Format.today(),
                     src: [],
                     dest: []
-                },
-                totals: {
-                    src: 0,
-                    dest: 0
                 },
                 inputOptions: {
                     percentLock: {          // only one column can use percent at a time
@@ -174,18 +168,27 @@
                 // this is a pretty funny way to duplicate a transaction but hey it works
                 this.transaction.id = "";
             },
+            total(arr) {
+                return arr.reduce((p, c) => p + c.amount, 0);
+            },
         },
         computed: {
             errors() {
                 let err = [];
-                if (this.totals.src !== this.totals.dest)
+                if (this.srctotal !== this.desttotal)
                     err.push('Debits and credits do not balance!');
-                if (this.totals.src <= 0 || this.totals.dest <= 0)
+                if (this.srctotal <= 0 || this.desttotal <= 0)
                     err.push('Debit and/or credits cannot be non-positive!');
                 return err;
             },
             hasErrors() {
                 return this.errors.length > 0;
+            },
+            srctotal() {
+               return this.total(this.transaction.src);
+            },
+            desttotal() {
+                return this.total(this.transaction.dest);
             }
         }
     }

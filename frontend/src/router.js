@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Ledger from './views/Ledger.vue'
-import Post from './views/Post.vue'
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
     routes: [
@@ -15,7 +14,7 @@ export default new Router({
         {
             path: '/post',
             name: 'post',
-            component: Post
+            component: () => import( './views/Post.vue')
         }
     ]
 })
