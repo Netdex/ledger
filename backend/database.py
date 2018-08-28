@@ -43,6 +43,7 @@ def transaction_get_by_id(id):
     return db.get(tsnq.id == id)
 
 
+# this isn't used at all
 def transaction_get_page(page):
     tsns = transaction_get_all()[::-1]
     # TODO maybe make this more efficient someday

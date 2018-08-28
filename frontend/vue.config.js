@@ -8,5 +8,5 @@ module.exports = {
             config.plugin("webpack-report")
                 .use(BundleAnalyzerPlugin, [{
                 }]);
-    }
+    },
 };

@@ -1,7 +1,8 @@
 <template>
     <div id="app">
         <b-navbar type="light" toggleable="md">
-            <router-link to="/" class="navbar-brand">ledger</router-link>
+            <b-navbar-brand to="/">
+            </b-navbar-brand>
             <b-navbar-toggle target="app_nav_collapse"></b-navbar-toggle>
             <b-collapse is-nav id="app_nav_collapse">
                 <b-navbar-nav>

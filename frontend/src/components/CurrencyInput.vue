@@ -50,6 +50,7 @@
         },
         watch: {
             sum: function () {
+                // if the component is currently watch dependant, ignore the call
                 if (this.isWatchSumDependant) {
                     this.isWatchSumDependant = false;
                     return;
@@ -60,6 +61,7 @@
                 this.changed(this.format);
             },
             type: function (newMode, oldMode) {
+                // move to new lock
                 this.destroyLock(oldMode);
                 this.acquireLock(newMode);
 
@@ -72,12 +74,17 @@
                     case 'exact':
                         break;
                     case 'percent':
+                        // properly destroy old lock by decrementing 
+                        // ref counter and removing named entry to account list
                         this.opts.percentLock.count--;
                         if (this.opts.percentLock.count === 0)
                             this.opts.percentLock.name = '';
+                        // set input value to currency amount
                         this.inputValue = (this.value / 100).toFixed(2);
                         break;
                     case 'diff':
+                        // properly destroy old lock by resetting handle 
+                        // and removing name to account list
                         this.opts.diffLock.name = '';
                         this.opts.diffLock.handle = null;
                         break;
@@ -88,12 +95,14 @@
                     case 'exact':
                         this.prepend = '$';
                         this.inputValue = (this.value / 100).toFixed(2);
-
                         break;
                     case 'percent':
-
+                        // properly acquire new lock by setting named entry 
+                        // and incrementing ref count
                         this.opts.percentLock.name = this.accountType;
                         this.opts.percentLock.count++;
+                        
+                        // set input value to currency amount
                         if (this.counterSum !== 0) {
                             let val = this.value / this.counterSum * 100;
                             this.inputValue = val.toFixed(2);
@@ -104,6 +113,8 @@
                         break;
                     case 'diff':
                         this.prepend = '$';
+                        // properly acquire new lock by setting handle to 
+                        // this component and settting named entry
                         this.opts.diffLock.name = this.accountType;
                         this.opts.diffLock.handle = this;
                         this.inputValue = (this.value / 100).toFixed(2);
@@ -124,6 +135,7 @@
                         this.prepend = this.currency(newValue);
                         break;
                     case 'diff':
+                        // only set watch flag if the change was due to user
                         if (setWatchFlag === true)
                             this.isWatchSumDependant = true;
                         newValue = Math.max(this.counterSum - this.sum + inputVal * 100, 0);
