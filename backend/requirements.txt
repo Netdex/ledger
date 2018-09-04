@@ -2,3 +2,4 @@ flask
 tinydb
 gevent
 requests
+jsonschema

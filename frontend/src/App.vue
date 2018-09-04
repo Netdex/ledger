@@ -1,14 +1,13 @@
 <template>
     <div id="app">
         <b-navbar type="light" toggleable="md">
-            <b-navbar-brand to="/">
-            </b-navbar-brand>
+            <b-navbar-brand to="/">ledger</b-navbar-brand>
             <b-navbar-toggle target="app_nav_collapse"></b-navbar-toggle>
             <b-collapse is-nav id="app_nav_collapse">
                 <b-navbar-nav>
                     <b-nav-item to="/">Home</b-nav-item>
-                    <b-nav-item to="/post">New transaction <i class="fas fa-pencil-alt"></i></b-nav-item>
                     <b-nav-item v-b-modal="'help-modal'">Help <i class="fas fa-question-circle"></i></b-nav-item>
+                    <b-btn to="/post" variant="success">New transaction <i class="fas fa-pencil-alt"></i></b-btn>
                 </b-navbar-nav>
                 <b-navbar-nav class="ml-auto">
                     <b-nav-item>this is truly the future of money management</b-nav-item>

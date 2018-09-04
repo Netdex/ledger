@@ -1,6 +1,7 @@
 <style scoped>
     .lp-loading {
         opacity: 0.5;
+        pointer-events: none;
     }
 
     .lp-success {
