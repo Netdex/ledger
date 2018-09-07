@@ -128,17 +128,17 @@
                 let newValue = 0;
                 switch (this.type) {
                     case 'exact':
-                        newValue = Math.round(inputVal * 100);
+                        newValue = Math.trunc(inputVal * 100);
                         break;
                     case 'percent':
-                        newValue = Math.round(this.counterSum * inputVal / 100);
+                        newValue = Math.trunc(this.counterSum * inputVal / 100);
                         this.prepend = this.currency(newValue);
                         break;
                     case 'diff':
                         // only set watch flag if the change was due to user
                         if (setWatchFlag === true)
                             this.isWatchSumDependant = true;
-                        newValue = Math.max(Math.round(this.counterSum - this.sum + inputVal * 100), 0);
+                        newValue = Math.max(Math.trunc(this.counterSum - this.sum + inputVal * 100), 0);
                         break;
                 }
                 this.$emit('input', newValue);
