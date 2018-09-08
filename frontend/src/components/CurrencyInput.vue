@@ -12,9 +12,24 @@
             <b-form-radio-group buttons
                                 button-variant="outline-primary"
                                 v-model="typeModel">
-                <b-form-radio value="exact">$</b-form-radio>
-                <b-form-radio value="percent" :disabled="!hasPercentLock">%</b-form-radio>
-                <b-form-radio value="diff" :disabled="!hasDiffLock">B</b-form-radio>
+                <b-form-radio value="exact"
+                              v-b-tooltip.html.hover
+                              title="<b>Exact Mode</b><br>
+                                You may enter an exact value, or a mathematical expression beginning with '='.<br>
+                                ex. '7.99', '=7.99*1.13', '=sqrt(3^2 + 4^2)'">$
+                </b-form-radio>
+                <b-form-radio value="percent"
+                              :disabled="!hasPercentLock"
+                              v-b-tooltip.html.hover
+                              title="<b>Percent Mode</b><br>
+                                You may enter a percentage, that will be taken of the opposite debit/credit's total.">%
+                </b-form-radio>
+                <b-form-radio value="diff"
+                              :disabled="!hasDiffLock"
+                              v-b-tooltip.html.hover
+                              title="<b>Balance Mode</b><br>
+                                The amount will be automatically chosen such that debits and credits balance.">B
+                </b-form-radio>
             </b-form-radio-group>
         </b-input-group>
 
@@ -133,7 +148,7 @@
                             try {
                                 newValue = Math.trunc(math.eval(val.substring(1)) * 100);
                                 val = (newValue / 100).toFixed(2);
-                            }catch(error){
+                            } catch (error) {
                                 alert("Invalid mathematical expression");
                                 newValue = 0;
                                 val = '0.00';
