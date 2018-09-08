@@ -146,7 +146,7 @@
                         let inputVal;
                         if (val.startsWith('=')) {
                             try {
-                                newValue = Math.trunc(math.eval(val.substring(1)) * 100);
+                                newValue = this.rtrunc(math.eval(val.substring(1)) * 100);
                                 val = (newValue / 100).toFixed(2);
                             } catch (error) {
                                 alert("Invalid mathematical expression");
@@ -155,14 +155,14 @@
                             }
                         } else {
                             inputVal = parseFloat(+val.replace(/[^\d.]/g, ''));
-                            newValue = Math.trunc(inputVal * 100);
+                            newValue = this.rtrunc(inputVal * 100);
                         }
 
                         break;
                     }
                     case 'percent': {
                         let inputVal = parseFloat(+val.replace(/[^\d.]/g, ''));
-                        newValue = Math.trunc(this.counterSum * inputVal / 100);
+                        newValue = this.rtrunc(this.counterSum * inputVal / 100);
                         this.prepend = this.currency(newValue);
                         break;
                     }
@@ -171,13 +171,16 @@
                         // only set watch flag if the change was due to user
                         if (setWatchFlag === true)
                             this.isWatchSumDependant = true;
-                        newValue = Math.max(Math.trunc(this.counterSum - this.sum + inputVal * 100), 0);
+                        newValue = Math.max(this.rtrunc(this.counterSum - this.sum + inputVal * 100), 0);
                         break;
                     }
                 }
                 this.$emit('input', newValue);
                 this.inputValue = val;
-            }
+            },
+            rtrunc(val){
+                return Math.trunc(Math.round(val));
+            },
         },
         computed: {
             format() {
