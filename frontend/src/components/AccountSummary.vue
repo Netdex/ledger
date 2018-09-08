@@ -83,10 +83,13 @@
                     }
                 }
 
+                let todayStr = Format.today();
                 // add all transactions to account map
                 for (let tact of this.list) {
-                    mapsum(tact.src, -1);
-                    mapsum(tact.dest, 1);
+                    if(tact.date <= todayStr) { // str comparison hack
+                        mapsum(tact.src, -1);
+                        mapsum(tact.dest, 1);
+                    }
                 }
                 return accs;
             },

@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-input-group :prepend="prepend">
-            <input type="number"
+            <input type="text"
                    step="0.01"
                    min="0.01"
                    @change="changed($event.target.value, true)"
@@ -22,6 +22,7 @@
 </template>
 <script>
     import Format from '@/mixins/Format'
+    import * as math from 'mathjs'
 
     export default {
         props: {
@@ -101,7 +102,7 @@
                         // and incrementing ref count
                         this.opts.percentLock.name = this.accountType;
                         this.opts.percentLock.count++;
-                        
+
                         // set input value to currency amount
                         if (this.counterSum !== 0) {
                             let val = this.value / this.counterSum * 100;
@@ -123,23 +124,41 @@
             },
             changed(val, setWatchFlag) {
                 // calculate the real monetary value in cents
-                let inputVal = parseFloat(+val.replace(/[^\d.]/g, ''));
 
                 let newValue = 0;
                 switch (this.type) {
-                    case 'exact':
-                        newValue = Math.trunc(inputVal * 100);
+                    case 'exact': {
+                        let inputVal;
+                        if (val.startsWith('=')) {
+                            try {
+                                newValue = Math.trunc(math.eval(val.substring(1)) * 100);
+                                val = (newValue / 100).toFixed(2);
+                            }catch(error){
+                                alert("Invalid mathematical expression");
+                                newValue = 0;
+                                val = '0.00';
+                            }
+                        } else {
+                            inputVal = parseFloat(+val.replace(/[^\d.]/g, ''));
+                            newValue = Math.trunc(inputVal * 100);
+                        }
+
                         break;
-                    case 'percent':
+                    }
+                    case 'percent': {
+                        let inputVal = parseFloat(+val.replace(/[^\d.]/g, ''));
                         newValue = Math.trunc(this.counterSum * inputVal / 100);
                         this.prepend = this.currency(newValue);
                         break;
-                    case 'diff':
+                    }
+                    case 'diff': {
+                        let inputVal = parseFloat(+val.replace(/[^\d.]/g, ''));
                         // only set watch flag if the change was due to user
                         if (setWatchFlag === true)
                             this.isWatchSumDependant = true;
                         newValue = Math.max(Math.trunc(this.counterSum - this.sum + inputVal * 100), 0);
                         break;
+                    }
                 }
                 this.$emit('input', newValue);
                 this.inputValue = val;
