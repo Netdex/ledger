@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <b-navbar type="light" toggleable="md">
+        <b-navbar type="dark" variant="primary" toggleable="md">
             <b-navbar-brand to="/">ledger</b-navbar-brand>
             <b-navbar-toggle target="app_nav_collapse"></b-navbar-toggle>
             <b-collapse is-nav id="app_nav_collapse">

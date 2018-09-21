@@ -1,6 +1,6 @@
 <template>
     <b-container :class="loadingStyle">
-        <b-navbar type="light" toggleable="md">
+        <b-navbar type="dark" variant="primary" toggleable="md" class="mt-3">
             <b-navbar-brand>{{transaction.id ? 'Edit transaction' : 'New transaction'}}</b-navbar-brand>
             <b-navbar-toggle target="post_nav_collapse"></b-navbar-toggle>
             <b-collapse is-nav id="post_nav_collapse">
