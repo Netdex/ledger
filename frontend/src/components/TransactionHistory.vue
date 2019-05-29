@@ -71,7 +71,6 @@
             return {
                 page: 1,
                 per_page: 10,
-                rows: this.list.length,
                 sortBy: 'date',
                 sortDesc: true,
                 fields: [
@@ -89,6 +88,11 @@
             },
             onRowClicked(item){
                 this.$router.push({name:'post',query:{id:item.id}});
+            }
+        },
+        computed: {
+            rows(){
+                return this.list.length
             }
         }
     }
