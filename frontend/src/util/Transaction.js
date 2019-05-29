@@ -24,25 +24,33 @@ export const Transaction = {
     },
     upsert(obj) {
         return new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('data', JSON.stringify(obj, this.filter));
+            if (obj._evidence) {
+                for (const file of obj._evidence) {
+                    formData.append('evidence[]', file);
+                }
+            }
+
             fetch(`/transaction/upsert`, {
                 method: 'POST',
-                body: JSON.stringify(obj, this.filter),
-                headers: {
-                    'Content-Type': 'application/json'
+                // body: ,
+                body: formData,
+                // headers: {
+                //     'Content-Type': 'application/json'
+                // }
+            }).then(response => {
+                if (response.ok)
+                    resolve();
+                else {
+                    response.text().then(reject)
                 }
-            })
-                .then(response => {
-                    if (response.status >= 200 && response.status < 300)
-                        resolve();
-                    else
-                        reject(`unexpected code ${response.status} while upserting transaction`);
-                })
-                .catch(reject);
+            }).catch(reject);
         });
     },
     filter(key, value) {
         // remove meta props
-        if (key.startsWith("_")) 
+        if (key.startsWith("_"))
             return undefined;
         return value;
     }

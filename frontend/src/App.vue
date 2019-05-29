@@ -5,9 +5,9 @@
             <b-navbar-toggle target="app_nav_collapse"></b-navbar-toggle>
             <b-collapse is-nav id="app_nav_collapse">
                 <b-navbar-nav>
+                    <b-btn to="/post" variant="success">New transaction <i class="fas fa-pencil-alt"></i></b-btn>
                     <b-nav-item to="/">Home</b-nav-item>
                     <b-nav-item v-b-modal="'help-modal'">Help <i class="fas fa-question-circle"></i></b-nav-item>
-                    <b-btn to="/post" variant="success">New transaction <i class="fas fa-pencil-alt"></i></b-btn>
                 </b-navbar-nav>
                 <b-navbar-nav class="ml-auto">
                     <b-nav-item>this is truly the future of money management</b-nav-item>

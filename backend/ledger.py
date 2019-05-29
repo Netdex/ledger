@@ -1,6 +1,9 @@
 from gevent.pywsgi import WSGIServer
 import json
-from flask import Flask, request, abort
+from flask import Flask, request, abort, send_from_directory
+from werkzeug.utils import secure_filename
+import os
+import uuid
 
 import database as db
 import validation
@@ -10,14 +13,39 @@ app = Flask(__name__,
             static_folder="../frontend/dist",
             static_url_path="")
 
+app.config['UPLOAD_FOLDER'] = config['upload_folder']
+os.makedirs(config['upload_folder'], exist_ok=True)
+app.config['MAX_CONTENT_LENGTH'] = config['max_content_length']
+
+
+
 
 @app.route('/transaction/upsert', methods=['POST'])
 def rt_transaction_upsert():
-    data = request.get_json()
+    data = json.loads(request.form.get('data'))
+    evidence_paths_list = []
+    evidence_names_list = []
+    for file in request.files.getlist("evidence[]"):
+        if file and validation.validate_file_name(file.filename):
+            filename = str(uuid.uuid4()) + '-' + secure_filename(file.filename)
+            evidence_paths_list.append(filename)
+            evidence_names_list.append(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            return 'a file uploaded was not valid', 400
+
     if not validation.validate_transaction(data):
-        abort(400)
+        return 'the transaction is not valid', 400
+    data['_evidence_paths'] = evidence_paths_list
+    data['_evidence_names'] = evidence_names_list
     db.transaction_upsert(data)
+
     return '', 200
+
+
+@app.route('/evidence/get/<string:id>')
+def rt_evidence_get_by_id(id):
+    return send_from_directory(config['upload_folder'], id)
 
 
 @app.route('/transaction/get/<string:id>')

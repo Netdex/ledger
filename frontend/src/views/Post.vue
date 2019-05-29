@@ -29,9 +29,7 @@
             </b-collapse>
         </b-navbar>
 
-        <b-form @submit="onSubmit">
-            <h3></h3>
-            <hr>
+        <b-form @submit="onSubmit" class="mt-4">
             <b-form-group label="Reason"
                           label-for="reason"
                           description="The reason this transaction was made.">
@@ -53,7 +51,7 @@
             <hr>
 
             <div class="mb-4">
-                <h4>Credits</h4>
+                <h5>Credits</h5>
                 <p>We will take money out of these accounts.</p>
                 <AccountList account-type="credit"
                              :list="transaction.src"
@@ -63,7 +61,7 @@
             </div>
 
             <div class="mb-4">
-                <h4>Debits</h4>
+                <h5>Debits</h5>
                 <p>We will put money into these accounts.</p>
                 <AccountList account-type="debit"
                              :list="transaction.dest"
@@ -71,8 +69,37 @@
                              :counter-sum="srctotal"
                              :opts.sync="inputOptions"></AccountList>
             </div>
-            
-            <b-card no-body align="center">
+
+            <hr>
+            <h5>Evidence</h5>
+            <p>Attach any files that witness this transaction. Note that any previously attached files will be overwritten on submission.</p>
+
+            <div class="mb-4">
+            <b-form-file class="mb-2" multiple
+                         v-model="transaction._evidence"
+                         accept="image/jpeg, image/png, image/gif">
+                <template slot="file-name" slot-scope="{ names }">
+                    <b-badge variant="primary" v-for="name in names" class="mr-2" :key="name">
+                        {{ name }}
+                    </b-badge>
+                </template>
+            </b-form-file>
+            <b-button @click="transaction._evidence = null">Clear</b-button>
+            </div>
+            <b-card-group columns>
+                <a v-for="(evidence_path, index) in transaction._evidence_paths" :key="evidence_path"
+                   :href="'/evidence/get/' + evidence_path"
+                   target="_blank">
+                    <b-card :img-src="'/evidence/get/' + evidence_path"
+                            overlay>
+                        <div slot="footer">
+                            <small class="text-muted">{{transaction._evidence_names[index]}}</small>
+                        </div>
+                    </b-card>
+                </a>
+            </b-card-group>
+
+            <b-card no-body class="mb-4" align="center">
                 <b-button type="submit" variant="primary" :disabled="hasErrors" block>Submit</b-button>
 
                 <b-list-group flush>
@@ -91,7 +118,6 @@
     import {Transaction} from "@/util/Transaction";
     import Format from "@/mixins/Format";
 
-
     export default {
         components: {AccountList},
         mixins: [LoadProgress],
@@ -100,6 +126,7 @@
                 this.fetchData(this.$route.query.id);
             } else if (this.$route.query.tact) {
                 try {
+                    // TODO vulnerable to XSS
                     this.transaction = Object.assign(this.transaction, JSON.parse(this.$route.query.tact));
                 } catch (e) {
                     alert(`error: ${e}`);
@@ -113,7 +140,10 @@
                     reason: "",
                     date: Format.today(),
                     src: [],
-                    dest: []
+                    dest: [],
+                    _evidence_paths: [],    // stores evidence paths from server
+                    _evidence_names: [],    // stores evidence names from server, by uploader
+                    _evidence: null         // stores local File objects from form
                 },
                 inputOptions: {
                     percentLock: {          // only one column can use percent at a time
@@ -185,7 +215,7 @@
                 return this.errors.length > 0;
             },
             srctotal() {
-               return this.total(this.transaction.src);
+                return this.total(this.transaction.src);
             },
             desttotal() {
                 return this.total(this.transaction.dest);
