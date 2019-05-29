@@ -72,7 +72,8 @@
 
             <hr>
             <h5>Evidence</h5>
-            <p>Attach any files that witness this transaction. Note that any previously attached files will be overwritten on submission.</p>
+            <p>Attach any images that witness this transaction.
+                Note that any previously attached images will be overwritten on submission.</p>
 
             <div class="mb-4">
             <b-form-file class="mb-2" multiple
