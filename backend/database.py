@@ -55,3 +55,18 @@ def transaction_get_page(page):
 
 def transaction_get_count():
     return len(db)
+
+
+def account_get_all():
+    tsn = transaction_get_all()
+    accounts = {}
+    for tact in tsn:
+        for src in tact['src']:
+            accounts[src['account']] = accounts.get(src['account'], 0) - src['amount']
+        for dest in tact['dest']:
+            accounts[dest['account']] = accounts.get(dest['account'], 0) + dest['amount']
+    return [
+        {
+            'account': name,
+            'amount': value
+        } for (name, value) in accounts.items() if value != 0]

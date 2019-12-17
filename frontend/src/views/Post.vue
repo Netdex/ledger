@@ -1,115 +1,117 @@
 <template>
-    <b-container :class="loadingStyle">
-        <b-navbar type="dark" variant="primary" toggleable="md" class="mt-3">
-            <b-navbar-brand>{{transaction.id ? 'Edit transaction' : 'New transaction'}}</b-navbar-brand>
-            <b-navbar-toggle target="post_nav_collapse"></b-navbar-toggle>
-            <b-collapse is-nav id="post_nav_collapse">
-                <b-navbar-nav class="ml-auto">
-                    <b-button id="deletePopover"
-                              variant="danger"
-                              v-if="transaction.id !== ''"
-                              class="m-1">
-                        Delete <i class="fas fa-trash"></i>
-                        <b-popover target="deletePopover"
-                                   placement="right"
-                                   title="Confirm"
-                                   triggers="click blur">
-                            <b-btn variant="danger" size="sm" @click="deleteTransaction" block>
-                                Delete this transaction
-                            </b-btn>
-                        </b-popover>
-                    </b-button>
-                    <b-button variant="info"
-                              v-if="transaction.id !== ''"
-                              class="m-1"
-                              @click="duplicate">
-                        Duplicate <i class="fas fa-copy"></i>
-                    </b-button>
-                </b-navbar-nav>
-            </b-collapse>
-        </b-navbar>
+    <b-container>
+        <b-container :class="loadingStyle">
+            <b-navbar type="dark" variant="primary" toggleable="md" class="mt-3">
+                <b-navbar-brand>{{transaction.id ? 'Edit transaction' : 'New transaction'}}</b-navbar-brand>
+                <b-navbar-toggle target="post_nav_collapse"/>
+                <b-collapse is-nav id="post_nav_collapse">
+                    <b-navbar-nav class="ml-auto">
+                        <b-button id="deletePopover"
+                                  variant="danger"
+                                  v-if="transaction.id !== ''"
+                                  class="m-1">
+                            Delete <i class="fas fa-trash"/>
+                            <b-popover target="deletePopover"
+                                       placement="right"
+                                       title="Confirm"
+                                       triggers="click blur">
+                                <b-btn variant="danger" size="sm" @click="deleteTransaction" block>
+                                    Delete this transaction
+                                </b-btn>
+                            </b-popover>
+                        </b-button>
+                        <b-button variant="info"
+                                  v-if="transaction.id !== ''"
+                                  class="m-1"
+                                  @click="duplicate">
+                            Duplicate <i class="fas fa-copy"/>
+                        </b-button>
+                    </b-navbar-nav>
+                </b-collapse>
+            </b-navbar>
 
-        <b-form @submit="onSubmit" class="mt-4">
-            <b-form-group label="Reason"
-                          label-for="reason"
-                          description="The reason this transaction was made.">
-                <b-form-input id="reason"
-                              type="text"
-                              placeholder="Transaction reason"
-                              v-model="transaction.reason"
-                              required></b-form-input>
-            </b-form-group>
-            <b-form-group label="Date"
-                          label-for="date"
-                          description="The date this transaction occurred.">
-                <b-form-input id="date"
-                              type="date"
-                              v-model="transaction.date"
-                              required></b-form-input>
-            </b-form-group>
+            <b-form @submit="onSubmit" class="mt-4">
+                <b-form-group label="Reason"
+                              label-for="reason"
+                              description="The reason this transaction was made.">
+                    <b-form-input id="reason"
+                                  type="text"
+                                  placeholder="Transaction reason"
+                                  v-model="transaction.reason"
+                                  required/>
+                </b-form-group>
+                <b-form-group label="Date"
+                              label-for="date"
+                              description="The date this transaction occurred.">
+                    <b-form-input id="date"
+                                  type="date"
+                                  v-model="transaction.date"
+                                  required/>
+                </b-form-group>
 
-            <hr>
+                <hr>
 
-            <div class="mb-4">
-                <h5>Credits</h5>
-                <p>We will take money out of these accounts.</p>
-                <AccountList account-type="credit"
-                             :list="transaction.src"
-                             :sum="srctotal"
-                             :counter-sum="desttotal"
-                             :opts.sync="inputOptions"></AccountList>
-            </div>
+                <div class="mb-4">
+                    <h5>Credits</h5>
+                    <p>We will take money out of these accounts.</p>
+                    <AccountList account-type="credit"
+                                 :list="transaction.src"
+                                 :sum="srctotal"
+                                 :counter-sum="desttotal"
+                                 :opts.sync="inputOptions"/>
+                </div>
 
-            <div class="mb-4">
-                <h5>Debits</h5>
-                <p>We will put money into these accounts.</p>
-                <AccountList account-type="debit"
-                             :list="transaction.dest"
-                             :sum="desttotal"
-                             :counter-sum="srctotal"
-                             :opts.sync="inputOptions"></AccountList>
-            </div>
+                <div class="mb-4">
+                    <h5>Debits</h5>
+                    <p>We will put money into these accounts.</p>
+                    <AccountList account-type="debit"
+                                 :list="transaction.dest"
+                                 :sum="desttotal"
+                                 :counter-sum="srctotal"
+                                 :opts.sync="inputOptions"/>
+                </div>
 
-            <hr>
-            <h5>Evidence</h5>
-            <p>Attach any images that witness this transaction.
-                Note that any previously attached images will be overwritten on submission.</p>
+                <hr>
+                <h5>Evidence</h5>
+                <p>Attach any images that witness this transaction.
+                    Note that any previously attached images will be overwritten on submission.</p>
 
-            <div class="mb-4">
-            <b-form-file class="mb-2" multiple
-                         v-model="transaction._evidence"
-                         accept="image/jpeg, image/png, image/gif">
-                <template slot="file-name" slot-scope="{ names }">
-                    <b-badge variant="primary" v-for="name in names" class="mr-2" :key="name">
-                        {{ name }}
-                    </b-badge>
-                </template>
-            </b-form-file>
-            <b-button @click="transaction._evidence = null">Clear</b-button>
-            </div>
-            <b-card-group columns>
-                <a v-for="(evidence_path, index) in transaction._evidence_paths" :key="evidence_path"
-                   :href="'/evidence/get/' + evidence_path"
-                   target="_blank">
-                    <b-card :img-src="'/evidence/get/' + evidence_path"
-                            overlay>
-                        <div slot="footer">
-                            <small class="text-muted">{{transaction._evidence_names[index]}}</small>
-                        </div>
-                    </b-card>
-                </a>
-            </b-card-group>
+                <div class="mb-4">
+                    <b-form-file class="mb-2" multiple
+                                 v-model="transaction._evidence"
+                                 accept="image/jpeg, image/png, image/gif">
+                        <template slot="file-name" slot-scope="{ names }">
+                            <b-badge variant="primary" v-for="name in names" class="mr-2" :key="name">
+                                {{ name }}
+                            </b-badge>
+                        </template>
+                    </b-form-file>
+                    <b-button @click="transaction._evidence = null">Clear</b-button>
+                </div>
+                <b-card-group columns>
+                    <a v-for="(evidence_path, index) in transaction._evidence_paths" :key="evidence_path"
+                       :href="'/evidence/get/' + evidence_path"
+                       target="_blank">
+                        <b-card :img-src="'/evidence/get/' + evidence_path"
+                                overlay>
+                            <div slot="footer">
+                                <small class="text-muted">{{transaction._evidence_names[index]}}</small>
+                            </div>
+                        </b-card>
+                    </a>
+                </b-card-group>
 
-            <b-card no-body class="mb-4" align="center">
-                <b-button type="submit" variant="primary" :disabled="hasErrors" block>Submit</b-button>
+                <b-card no-body class="mb-4" align="center">
+                    <b-button type="submit" variant="primary" :disabled="hasErrors" block>Submit</b-button>
 
-                <b-list-group flush>
-                    <b-list-group-item v-for="error in errors" :key="error">
-                        {{ error }}
-                    </b-list-group-item>
-                </b-list-group>
-            </b-card>
-        </b-form>
+                    <b-list-group flush>
+                        <b-list-group-item v-for="error in errors" :key="error">
+                            {{ error }}
+                        </b-list-group-item>
+                    </b-list-group>
+                </b-card>
+            </b-form>
+        </b-container>
     </b-container>
 </template>
 

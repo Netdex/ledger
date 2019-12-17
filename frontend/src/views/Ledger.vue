@@ -1,7 +1,7 @@
 <template>
     <b-container :class="loadingStyle">
-        <AccountSummary :list="transactions" class="my-4"></AccountSummary>
-        <TransactionHistory :list="transactions" class="my-4"></TransactionHistory>
+        <AccountSummary :list="transactions" class="my-4"/>
+        <TransactionHistory :list="transactions" class="my-4"/>
     </b-container>
 </template>
 
@@ -32,10 +32,10 @@
                 Transaction.getAll()
                     .then(response => {
                         this.transactions = response;
-                        this.state = 'success';
+                        this.setState('success');
                     })
                     .catch(() => {
-                        this.state = 'error'
+                        this.setState('error');
                     });
             }
         }

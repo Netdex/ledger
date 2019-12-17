@@ -18,8 +18,6 @@ os.makedirs(config['upload_folder'], exist_ok=True)
 app.config['MAX_CONTENT_LENGTH'] = config['max_content_length']
 
 
-
-
 @app.route('/transaction/upsert', methods=['POST'])
 def rt_transaction_upsert():
     data = json.loads(request.form.get('data'))
@@ -75,6 +73,11 @@ def rt_transaction_get_page(page):
 def rt_transaction_delete(id):
     db.transaction_delete(id)
     return '', 200
+
+
+@app.route('/account/get/all')
+def rt_account_get_all():
+    return json.dumps(db.account_get_all())
 
 
 @app.route('/')

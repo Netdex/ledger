@@ -2,8 +2,8 @@
     <b-card>
         <div slot="header">
             <b-nav pills>
-                <b-nav-item @click="addAccount" active>Add <i class="fas fa-plus"></i></b-nav-item>
-                <b-nav-item @click="clearAccounts">Clear <i class="fas fa-eraser"></i></b-nav-item>
+                <b-nav-item @click="addAccount" active>Add <i class="fas fa-plus"/></b-nav-item>
+                <b-nav-item @click="clearAccounts">Clear <i class="fas fa-eraser"/></b-nav-item>
                 <div class="ml-auto">
                     <b-btn variant="primary">
                         Total 
@@ -20,7 +20,7 @@
                     <b-form-input type="text"
                                   placeholder="Account name"
                                   v-model="acc.account"
-                                  required></b-form-input>
+                                  required/>
                 </b-col>
                 <b-col md="4">
                     <CurrencyInput v-model="acc.amount"
@@ -28,11 +28,11 @@
                                    :opts.sync="opts"
                                    :sum="sum"
                                    :counter-sum="counterSum"
-                                   :type.sync="acc.rtype"></CurrencyInput>
+                                   :type.sync="acc.rtype"/>
                 </b-col>
                 <b-col md="2">
                     <b-button variant="danger" @click="delAccount(acc)" block>
-                        <i class="fas fa-trash"></i></b-button>
+                        <i class="fas fa-trash"/></b-button>
                 </b-col>
             </b-row>
         </b-form-group>

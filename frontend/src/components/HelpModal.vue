@@ -23,7 +23,7 @@
                 With this paradigm it is not important who owes who money - you can pay anyone as long as it balances the ledger. </p>
             <hr>
             <h5>Ledger View</h5>
-            <b-img src="https://i.imgur.com/N2N3vGy.png" class="my-4" fluid></b-img>
+            <b-img src="https://i.imgur.com/N2N3vGy.png" class="my-4" fluid/>
             <p>
                 The Ledger View shows all transactions that have been posted to the ledger, as well as the status 
                 of all accounts that have been mentioned in the ledger.</p>
@@ -38,7 +38,7 @@
                 the original transaction.</p>
             <hr>
             <h5>Transaction Editor</h5>
-            <b-img src="https://i.imgur.com/fbzAS3Q.png" class="my-4" fluid></b-img>
+            <b-img src="https://i.imgur.com/fbzAS3Q.png" class="my-4" fluid/>
 
             <p>
                 The transaction editor allows you to easily create a transaction affecting multiple accounts. Each 
