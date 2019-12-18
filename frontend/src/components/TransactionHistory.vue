@@ -37,14 +37,16 @@
                                 <b-badge v-for="src in data.item.src"
                                          :key="src.id"
                                          variant="primary" class="w-100">{{src.account}}
-                                    <b-badge variant="danger" class="float-right">-{{currency(src.amount)}}</b-badge>
+                                    <b-badge variant="danger" class="float-right">-{{currency(src.amount)}}
+                                    </b-badge>
                                 </b-badge>
                             </b-col>
                             <b-col md="6">
                                 <b-badge v-for="dest in data.item.dest"
                                          :key="dest.id"
                                          variant="primary" class="w-100">{{dest.account}}
-                                    <b-badge variant="success" class="float-right">+{{currency(dest.amount)}}</b-badge>
+                                    <b-badge variant="success" class="float-right">+{{currency(dest.amount)}}
+                                    </b-badge>
                                 </b-badge>
                             </b-col>
                         </b-row>
@@ -86,12 +88,12 @@
                 this.rows = items.length;
                 this.page = 1;
             },
-            onRowClicked(item){
-                this.$router.push({name:'post',query:{id:item.id}});
+            onRowClicked(item) {
+                this.$router.push({name: 'post', query: {id: item.id}});
             }
         },
         computed: {
-            rows(){
+            rows() {
                 return this.list.length
             }
         }
