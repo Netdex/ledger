@@ -1,3 +1,6 @@
+<style scoped>
+    @import '~handsontable/dist/handsontable.full.css';
+</style>
 <template>
     <b-container>
         <b-container :class="loadingStyle">
@@ -55,7 +58,7 @@
                     <h5>Credits</h5>
                     <p>We will take money out of these accounts.</p>
                     <AccountList account-type="credit"
-                                 :list="transaction.src"
+                                 :list.sync="transaction.src"
                                  :sum="srctotal"
                                  :counter-sum="desttotal"
                                  :opts.sync="inputOptions"/>
@@ -65,12 +68,18 @@
                     <h5>Debits</h5>
                     <p>We will put money into these accounts.</p>
                     <AccountList account-type="debit"
-                                 :list="transaction.dest"
+                                 :list.sync="transaction.dest"
                                  :sum="desttotal"
                                  :counter-sum="srctotal"
                                  :opts.sync="inputOptions"/>
                 </div>
+<!--                <FormulaTable :debtors.sync="transaction.dest" :creditors.sync="transaction.src"/>-->
 
+                <hr>
+                <h5>Rough Work</h5>
+                <p>Use this spreadsheet for intermediate calculations (changes are not saved). You may attach a downloaded copy
+                for evidence.</p>
+                <iframe width="100%" height="600" frameborder="0" scrolling="no" src="https://onedrive.live.com/embed?resid=C6E67F4A19FA6C6B%212303&authkey=%21AMLwqF87hautLnQ&em=2&AllowTyping=True&wdDownloadButton=True&wdInConfigurator=True"></iframe>
                 <hr>
                 <h5>Evidence</h5>
                 <p>Attach any images that witness this transaction.
@@ -79,7 +88,7 @@
                 <div class="mb-4">
                     <b-form-file class="mb-2" multiple
                                  v-model="transaction._evidence"
-                                 accept="image/jpeg, image/png, image/gif">
+                                 accept="image/jpeg, image/png, image/gif, .xls, .xlsx">
                         <template slot="file-name" slot-scope="{ names }">
                             <b-badge variant="primary" v-for="name in names" class="mr-2" :key="name">
                                 {{ name }}
@@ -120,9 +129,10 @@
     import LoadProgress from "@/mixins/LoadProgress";
     import {Transaction} from "@/util/Transaction";
     import Format from "@/mixins/Format";
+    import FormulaTable from "@/components/FormulaTable";
 
     export default {
-        components: {AccountList},
+        components: {AccountList, FormulaTable},
         mixins: [LoadProgress],
         created() {
             if (this.$route.query.id) {
@@ -132,7 +142,7 @@
                     // TODO vulnerable to XSS
                     this.transaction = Object.assign(this.transaction, JSON.parse(this.$route.query.tact));
                 } catch (e) {
-                    alert(`error: ${e}`);
+                    this.setState('error');
                 }
             }
         },
@@ -157,7 +167,7 @@
                         name: '',
                         handle: null
                     },
-                }
+                },
             }
         },
         methods: {

@@ -23,12 +23,16 @@
                                   required/>
                 </b-col>
                 <b-col md="4">
-                    <CurrencyInput v-model="acc.amount"
-                                   :account-type="accountType"
-                                   :opts.sync="opts"
-                                   :sum="sum"
-                                   :counter-sum="counterSum"
-                                   :type.sync="acc.rtype"/>
+                    <input type="text"
+                           step="0.01"
+                           min="0.01"
+                           :value="acc._sheetValue" class="form-control"/>
+<!--                    <CurrencyInput v-model="acc.amount"-->
+<!--                                   :account-type="accountType"-->
+<!--                                   :opts.sync="opts"-->
+<!--                                   :sum="sum"-->
+<!--                                   :counter-sum="counterSum"-->
+<!--                                   :type.sync="acc.rtype"/>-->
                 </b-col>
                 <b-col md="2">
                     <b-button variant="danger" @click="delAccount(acc)" block>
@@ -81,6 +85,7 @@
                     account: '',
                     amount: 0,
                     rtype: 'exact',
+                    _sheetValue: 0
                 });
             },
             delAccount(account) {

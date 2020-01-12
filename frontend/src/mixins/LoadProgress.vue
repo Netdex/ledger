@@ -27,8 +27,12 @@
             };
         },
         methods: {
-            setState(state) {
+            setState(state, msg) {
                 this.state = state;
+                if(state === 'error'){
+                    // TODO Better error handling code
+                    alert(msg);
+                }
             },
         },
         computed: {
